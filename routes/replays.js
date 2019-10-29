@@ -99,11 +99,18 @@ router.post('/submit', (req, res) => {
       if (result == null) {
         ReplayDao.insert(replay);
         UsersDao.increaseStats(replay, 1);
+        const SocketController = require("../controllers/socket-controller");
+        // Update scoreboard
+
+        // Transmit scoreboard changes 
+        SocketController.broadcast("scoreboard", "Scoreboard upate!");
+
         sendResponseObject(res, 200, {  "body": replay });
         return;
       }
       sendResponseObject(res, 200, {  "body": "Replay already submitted " + " (#" + replay.id + ")" });
     } catch (e) {
+      console.log(e);
       sendResponseObject(res, 500, {  "body": "Database exception." });
       return;
     }
