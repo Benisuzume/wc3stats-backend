@@ -3,8 +3,6 @@ var sockets = [];
 
 module.exports = class SocketController {
 
-    
-
     static init(serv) {
         server = serv;
         var io = require('socket.io')(server);
@@ -16,9 +14,6 @@ module.exports = class SocketController {
             sockets.push(socket);
             console.log("We have a new client: " + socket.id + ". Connected clients = " + sockets.length);
         
-            // We update the scoreboard of the connecting client 
-            socket.emit('scoreboard', "Scoreboard update!");
-
             socket.on('disconnect', function() {
                 // unregister client socket 
                 for (var i = sockets.length - 1; i >= 0; i--) {

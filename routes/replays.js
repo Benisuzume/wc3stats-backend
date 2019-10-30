@@ -86,6 +86,7 @@ router.post('/submit', (req, res) => {
       sendResponseObject(res, 200, {  "body": "Something went wrong when trying to verify the map and version."});
       return;
     }
+    /*
     if (!foundMatchingMap) {
       sendResponseObject(res, 200, {  "body": "This bot does not support map " + replay.map + " (#" + replay.id + ")"});
       return;
@@ -94,17 +95,31 @@ router.post('/submit', (req, res) => {
       sendResponseObject(res, 200, {  "body": "This bot does not support version " + replay.version + " (#" + replay.id + ")"});
       return;
     }
+    */
     try {
       var result = await ReplayDao.getReplayByGameId(replay.id);
       if (result == null) {
-        ReplayDao.insert(replay);
-        UsersDao.increaseStats(replay, 1);
+        await ReplayDao.insert(replay);
+        await UsersDao.increaseStats(replay, 1);
         const SocketController = require("../controllers/socket-controller");
         // Update scoreboard
-
-        // Transmit scoreboard changes 
-        SocketController.broadcast("scoreboard", "Scoreboard upate!");
-
+        var scoreboard = { "map": replay.map, "gameType": replay.gameType };
+        switch (replay.gameType) {
+          case "ffa": 
+            scoreboard.users = await UsersDao.getFFARankedUsersSorted(); 
+            break;
+          case "solo": 
+            scoreboard.users = await UsersDao.getSoloRankedUsersSorted(); 
+            break;
+          case "team": 
+            scoreboard.users = await UsersDao.getTeamRankedUsersSorted(); 
+            break;
+          default: scoreboard.users = [];
+        }
+        // Transmit valid scoreboard changes 
+        if (scoreboard.users.length > 0) {
+            SocketController.broadcast("scoreboard", scoreboard);
+        }
         sendResponseObject(res, 200, {  "body": replay });
         return;
       }
