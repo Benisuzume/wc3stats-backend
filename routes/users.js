@@ -12,20 +12,23 @@ function sendResponseObject(res, statusCode, object) {
 }
 
 /**
- * Returns all users
+ * Returns all users, excluding their rank
  */
 router.get('/all', function(req, res, next) {
-  res.send({
-    users: [ {
-      name: "Tiago",
-      wins: "100",
-      losses: 5
-    }, {
-      name: "Julian",
-      wins: "100",
-      losses: 5
-    }]
-  });
+  (async () => {  
+    const users = await UsersDao.getAll();
+    sendResponseObject(res, 200, users);
+  })();
+});
+
+/**
+ * Returns the number of users
+ */
+router.get('/count', function(req, res, next) {
+  (async () => {  
+    const users = await UsersDao.getAll();
+    sendResponseObject(res, 200, await users.length);
+  })();
 });
 
 /**
@@ -51,6 +54,51 @@ router.get('/name', function(req, res, next) {
     else 
       sendResponseObject(res, 404, user);
     })();
+});
+
+/**
+ * Gets a limited amount of users sorted by their ffa rank
+ */
+router.get('/sort/ffa', function(req, res, next) {
+  (async () => {  
+    var users = await UsersDao.getFFARankedUsersSorted();
+    users.sort(function (u1, u2) {
+      if (u1.ffaWins == u2.ffaWins) 
+         return u1.ffaLosses - u2.ffaLosses;
+      return u2.ffaWins - u1.ffaWins;
+    });
+    sendResponseObject(res, 200, users);
+  })();
+});
+
+/**
+ * Gets a limited amount of users sorted by their solo rank
+ */
+router.get('/sort/solo', function(req, res, next) {
+  (async () => {  
+    var users = await UsersDao.getSoloRankedUsersSorted();
+    users.sort(function (u1, u2) {
+      if (u1.soloWins == u2.soloWins) 
+         return u1.soloLosses - u2.soloLosses;
+      return u2.soloWins - u1.soloWins;
+    });
+    sendResponseObject(res, 200, users);
+  })();
+});
+
+/**
+ * Gets a limited amount of users sorted by their team rank
+ */
+router.get('/sort/team', function(req, res, next) {
+  (async () => {  
+    var users = await UsersDao.getUserTeamRank();
+    users.sort(function (u1, u2) {
+      if (u1.teamWins == u2.teamWins) 
+         return u1.teamLosses - u2.teamLosses;
+      return u2.teamWins - u1.teamWins;
+    });
+    sendResponseObject(res, 200, users);
+  })();
 });
 
 module.exports = router;
