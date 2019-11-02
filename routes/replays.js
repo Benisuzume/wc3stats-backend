@@ -15,23 +15,6 @@ router.get('/', function(req, res, next) {
 // https://www.robinwieruch.de/node-express-server-rest-api
 
 
-/**
- * Get All
- */
-router.get('/all', function(req, res, next) {
-  res.send({
-    replays: [ {
-      name: "Tiago",
-      wins: "100",
-      losses: 5
-    }, {
-      name: "Julian",
-      wins: "100",
-      losses: 5
-    }]
-  });
-});
-
 function sendResponseObject(res, statusCode, object) {
   res.writeHead(statusCode, {'Content-Type': 'application/json'});
   res.end(JSON.stringify(object));
@@ -43,7 +26,6 @@ function sendResponseObject(res, statusCode, object) {
  */
 router.post('/submit', (req, res) => {
   (async () => {  
-
     var id = req.body.id;
     var wc3gameJson = await Wc3StatsController.fetchReplayById(id);
 
@@ -66,8 +48,8 @@ router.post('/submit', (req, res) => {
       return;
     }
     var maps = req.body.maps;
-    var foundMatchingMap = false;
-    var foundMatchingVer = false;
+    //var foundMatchingMap = false;
+    //var foundMatchingVer = false;
     try {
       if (maps != null && maps != undefined) {
         for (var i = 0; i < maps.length; i++) {
@@ -130,6 +112,17 @@ router.post('/submit', (req, res) => {
       sendResponseObject(res, 500, {  "body": "Database exception." });
       return;
     }
+  })();
+});
+
+/**
+ * Get replays by player 
+ */
+router.get('/player', function(req, res, next) {
+  (async () => {  
+    var search = req.body.name.toLowerCase();
+    var replays = await ReplayDao.getPlayerReplays(search);
+    sendResponseObject(res, 200, replays);
   })();
 });
 

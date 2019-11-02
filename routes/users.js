@@ -32,6 +32,18 @@ router.get('/count', function(req, res, next) {
 });
 
 /**
+ * Searches for users by name, excluding user ranking 
+ * Example query: {"name": "c"}
+ */
+router.get('/search', function(req, res, next) {
+  (async () => {  
+    var search = req.body.name.toLowerCase();
+    var users = await UsersDao.getMatchingUsers(search);
+    sendResponseObject(res, 200, users);
+  })();
+});
+
+/**
  * Queries for a user by a certain name includes ranking.
  * Example query: { "name": "pinzu"}
  */
