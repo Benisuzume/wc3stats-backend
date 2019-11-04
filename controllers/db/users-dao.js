@@ -3,7 +3,9 @@ const MongoClient = require('mongodb').MongoClient;
 const secret = require("../../.secret.json");  
 const BnetUser = require("../../models/user");
 
-const url = "mongodb://" + secret.db.host + ":" + secret.db.port + "/" + secret.db.name;
+//const url = "mongodb://" + secret.db.host + ":" + secret.db.port + "/" + secret.db.name;
+const url = secret.db.url;
+
 const dbName = secret.db.name;          
 const collectionKey = 'users';
 
@@ -267,6 +269,28 @@ module.exports = {
                     reject(err);
                 else {
                     db.db(dbName).collection(collectionKey).find().toArray(function (err, res) {
+                        if (err)
+                            reject(err);
+                        else  
+                            resolve(res);
+                    });
+                }
+                if (db !== null) 
+                    db.close();
+            });
+        });
+    },
+
+    /**
+     * Drop table
+     */
+    dropTable() {
+        return new Promise(function (resolve, reject) {
+            MongoClient.connect(url, function(err, db) {
+                if (err) 
+                    reject(err);
+                else {
+                    db.db(dbName).collection(collectionKey).drop(function (err, res) {
                         if (err)
                             reject(err);
                         else  

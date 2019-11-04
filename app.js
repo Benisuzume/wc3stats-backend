@@ -43,9 +43,8 @@ app.use(function(err, req, res, next) {
 
 
 // Initializes the websocket used for async communication with connected clients
-var server = app.listen(3001);
 const SocketController = require("./controllers/socket-controller");
-SocketController.init(server);
+SocketController.init();
 
 module.exports = app;
 

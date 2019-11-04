@@ -1,35 +1,28 @@
-var server;
-var sockets = [];
+
+// var server;
+// var sockets = [];
+
+const secret = require("../.secret.json");  
+const io = require("socket.io-client");
+var socket = null;
 
 module.exports = class SocketController {
 
-    static init(serv) {
-        server = serv;
-        var io = require('socket.io')(server);
-        // Register a callback function to run when we have an individual connection
-        // This is run for each individual user that connects
-        io.sockets.on('connection', function (socket) {
-            
-            // register client socket 
-            sockets.push(socket);
-            console.log("We have a new client: " + socket.id + ". Connected clients = " + sockets.length);
-        
-            socket.on('disconnect', function() {
-                // unregister client socket 
-                for (var i = sockets.length - 1; i >= 0; i--) {
-                    if (sockets[i].id == socket.id) {
-                        sockets.splice(i, 1);
-                        break;
-                    }
-                }
-                console.log("Client has disconnected: " + socket.id + ". Connected clients = " + sockets.length);
-            });
-        });
+    static init() {
+        var url = secret.socket_server.url;
+        console.log("socket url: " + url);
+        socket = io.connect(url);
     }
 
+    /**
+     * Broadcasts to bots are achieved by sending a message to a websocket-server
+     * possible tags: broadcast, message.
+     * @param {*} tag 
+     * @param {*} data 
+     */
     static broadcast(tag, data) {
-        for (var i = sockets.length - 1; i >= 0; i--) {
-            sockets[i].emit(tag, data)
-        }
+        console.log("broadcasting: " + tag);
+        socket.emit(tag, data);
     }
+    
 }

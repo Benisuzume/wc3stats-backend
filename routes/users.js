@@ -113,4 +113,18 @@ router.get('/sort/team', function(req, res, next) {
   })();
 });
 
+/**
+ * Drop all users, made for testing purposes onlys
+ */
+router.post("/drop/all", function(req, res, next) {
+  (async () => {  
+    try {
+      var result = await UsersDao.dropTable();
+      sendResponseObject(res, 200, result);
+    } catch (err) {
+      sendResponseObject(res, 500, "Database error");
+    }
+  })();
+});
+
 module.exports = router;

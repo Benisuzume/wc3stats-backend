@@ -1,7 +1,8 @@
 const MongoClient = require('mongodb').MongoClient;
 const secret = require("../../.secret");
 
-const url = "mongodb://" + secret.db.host + ":" + secret.db.port + "/" + secret.db.name;
+//const url = "mongodb://" + secret.db.host + ":" + secret.db.port + "/" + secret.db.name;
+const url = secret.db.url;
 
 const dbName = secret.db.name;
 const collectionKey = 'replays';
@@ -76,6 +77,29 @@ module.exports = class ReplayDao {
             });
         });
     }
+
+    /**
+     * Drop table
+     */
+    static dropTable() {
+        return new Promise(function (resolve, reject) {
+            MongoClient.connect(url, function(err, db) {
+                if (err) 
+                    reject(err);
+                else {
+                    db.db(dbName).collection(collectionKey).drop(function (err, res) {
+                        if (err)
+                            reject(err);
+                        else  
+                            resolve(res);
+                    });
+                }
+                if (db !== null) 
+                    db.close();
+            });
+        });
+    }
+
 
 /**
  * Queries replays from a players history up to a given limit.
