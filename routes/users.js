@@ -38,8 +38,13 @@ router.get('/count', function(req, res, next) {
 router.get('/search', function(req, res, next) {
   (async () => {  
     var search = req.body.name.toLowerCase();
-    var users = await UsersDao.getMatchingUsers(search);
-    sendResponseObject(res, 200, users);
+    try {
+      var users = await UsersDao.getMatchingUsers(search);
+      sendResponseObject(res, 200, users);
+    } catch (err) {
+      console.log(err);
+      sendResponseObject(res, 500, null);
+    }
   })();
 });
 
@@ -52,7 +57,7 @@ router.get('/name', function(req, res, next) {
   var includeRank = true; // default
   (async () => {  
     const user = await UsersDao.getUserByName(name);
-    if (includeRank !== undefined && includeRank) {
+    if (includeRank !== undefined && includeRank && user != null) {
         const [teamRank, soloRank, ffaRank] = await Promise.all([ 
         UsersDao.getUserTeamRank(name), 
         UsersDao.getUserSoloRank(name), 

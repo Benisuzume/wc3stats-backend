@@ -241,8 +241,7 @@ module.exports = {
      */
     getMatchingUsers(search) {
         return new Promise(function (resolve, reject) {
-           // (async () => {
-                MongoClient.connect(url, function(err, db) {
+            MongoClient.connect(url, function(err, db) {
                 if (err) 
                     reject(err);
                 else {
@@ -253,8 +252,7 @@ module.exports = {
                             resolve(res);
                     });
                 }
-                });
-            //})();
+            });
            
         });
     },

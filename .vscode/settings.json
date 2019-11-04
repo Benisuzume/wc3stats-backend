@@ -4,5 +4,5 @@
         ".vscode{,/**}"
     ],
     "appService.deploySubpath": "",
-    "appService.defaultWebAppToDeploy": "/subscriptions/ce5bb5a8-de03-4b79-b024-eaeb8f8cb676/resourceGroups/w3-discord-bot/providers/Microsoft.Web/sites/wc3stats-ws-server"
+    "appService.defaultWebAppToDeploy": "/subscriptions/ce5bb5a8-de03-4b79-b024-eaeb8f8cb676/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/wc3stats-backend"
 }
